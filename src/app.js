@@ -1,19 +1,28 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3001;
-const mongoose = require('mongoose');
+require('./db/conn');
+const Student = require("./models/students")
 
-mongoose.connect("mongodb://localhost:27017/test?authSource=admin",{ useUnifiedTopology: false }).then((res) =>{
-    console.log("connection is successful");
-}).catch((e)=>{
-    console.log("No connection",e);
-})
+app.use(express.json());
+
+
 
 app.get('/',(req,res)=>{
 res.send('Welcome to our page!.........')
 })
+
+app.get('/students',async (req,res)=>{
+   let studentData = await Student.find({});
+    res.json(studentData);
+})
 app.post('/students',(req,res)=>{
-    res.send("hello krishna! how are you")
+    const user = new Student(req.body);
+    user.save().then(()=>{
+        res.status(201).send(user);
+    }).catch((e)=>{
+        res.status(400).send(e);
+    })
 })
 
 app.listen(port,()=>{
