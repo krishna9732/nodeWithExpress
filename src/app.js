@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3001;
+const cors = require('cors')
 require('./db/conn');
 const Student = require("./models/students")
 
 app.use(express.json());
-
+app.use(cors({
+    origin:'http://localhost:3000'
+}))
 
 
 app.get('/',(req,res)=>{
@@ -39,7 +42,7 @@ app.get('/students/:id',async (req,res)=>{
 app.post('/students',(req,res)=>{
     const user = new Student(req.body);
     user.save().then(()=>{
-        res.status(201).send(user);
+        res.status(201).send({message:'successfully created data'});
     }).catch((e)=>{
         res.status(400).send(e);
     })
