@@ -1,14 +1,12 @@
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 const cors = require('cors')
 require('./db/conn');
 const Student = require("./models/students")
 
 app.use(express.json());
-app.use(cors({
-    origin:'http://localhost:3000'
-}))
+app.use(cors())
 
 
 app.get('/',(req,res)=>{
@@ -65,7 +63,7 @@ app.patch('/students/:id', async (req,res)=>{
     try{
         const _id = req.params.id;
         const updateStudent = await Student.findByIdAndUpdate(_id,req.body,{new:true})
-       res.send(`${updateStudent} data updated successfully`);
+       res.send({message:`${_id} data updated successfully`});
     }catch(e){
         res.status(500).send(e);
     }
@@ -75,10 +73,10 @@ app.patch('/students/:id', async (req,res)=>{
 
 //delete student data 
 app.delete('/students/:id',async(req,res)=>{
-    console.log('req.id',req.body);
     try{
-        const deleteData = await Student.find({id:req.id}).remove();
-        res.json(studentData);
+        const _id = req.params.id;
+        const deleteData = await Student.findOneAndDelete({_id});
+        res.json({message:`${_id} deleted succesfully`});
     }catch(e){
         res.status(400).send(e);
     }
